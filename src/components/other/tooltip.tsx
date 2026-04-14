@@ -71,10 +71,15 @@ export const StandardTooltipContent: React.FC<{
       {task.end.getTime() - task.start.getTime() !== 0 && (
         <p className={styles.tooltipDefaultContainerParagraph}>
           <strong>Duration: </strong>
-          {`${~~(
-            (task.end.getTime() - task.start.getTime()) /
-            (1000 * 60 * 60 * 24)
-          )} day(s)`}
+          {`${(() => {
+            const diff =
+              (task.end.getTime() - task.start.getTime()) /
+              (1000 * 60 * 60 * 24);
+
+            return diff % 1 > 0.99
+              ? Math.ceil(diff)
+              : Math.floor(diff);
+          })()} day(s)`}
         </p>
       )}
 
