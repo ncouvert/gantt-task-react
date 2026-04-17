@@ -34,7 +34,7 @@ type ArrowProps = {
   isCritical: boolean;
   rtl: boolean;
   onArrowDoubleClick?: (taskFrom: Task, taskTo: Task) => void;
-  onArrowClick?: (
+  onArrowContextMenu?: (
     taskFrom: Task,
     extremityFrom: DateExtremity,
     taskTo: Task,
@@ -71,7 +71,8 @@ const ArrowInner: React.FC<ArrowProps> = ({
   isCritical,
   rtl,
   onArrowDoubleClick = undefined,
-  onArrowClick = undefined,
+  //onArrowClick = undefined,
+  onArrowContextMenu = undefined,
   handleFixDependency,
 }) => {
   const indexFrom = useMemo(
@@ -89,10 +90,10 @@ const ArrowInner: React.FC<ArrowProps> = ({
     }
   }, [taskFrom, taskTo, onArrowDoubleClick]);
 
-  const onClick = useCallback(
+  const onContextMenu = useCallback(
     (event: React.MouseEvent<SVGElement>) => {
-      if (onArrowClick) {
-        onArrowClick(taskFrom, extremityFrom, taskTo, extremityTo, event);
+     if (onArrowContextMenu) {
+        onArrowContextMenu(taskFrom, extremityFrom, taskTo, extremityTo, event);
       }
     },
     [taskFrom, taskTo, onArrowDoubleClick]
@@ -201,7 +202,7 @@ const ArrowInner: React.FC<ArrowProps> = ({
         data-testid={`task-arrow-${extremityFrom}-${taskFrom.name}-${extremityTo}-${taskTo.name}`}
         className={`"arrow" ${styles.arrow_clickable}`}
         onDoubleClick={onDoubleClick}
-        onClick={onClick}
+        onContextMenu={onContextMenu}
       >
         {onArrowDoubleClick && <path d={path} className={styles.clickZone} />}
 
