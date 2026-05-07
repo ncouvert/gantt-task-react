@@ -93,6 +93,7 @@ const ArrowInner: React.FC<ArrowProps> = ({
   const onContextMenu = useCallback(
     (event: React.MouseEvent<SVGElement>) => {
      if (onArrowContextMenu) {
+          event.stopPropagation();
         onArrowContextMenu(taskFrom, extremityFrom, taskTo, extremityTo, event);
       }
     },

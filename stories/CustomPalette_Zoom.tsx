@@ -10,6 +10,7 @@ import {
   Task,
   TaskContextualPaletteProps,
   TaskDependencyContextualPaletteProps,
+  BackgroundContextualPaletteProps,
   TaskOrEmpty,
   ViewMode,
 } from "../src";
@@ -220,6 +221,60 @@ export const CustomPalette_Zoom: React.FC = props => {
           data-testid="delete-task"
         >
           <DeleteForeverIcon fontSize="small" />
+        </IconButton>
+        <IconButton
+          size="small"
+          aria-label="Close toolbar"
+          title="Close toolbar"
+          onClick={onClose}
+          data-testid="close-toolbar"
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </div>
+    );
+  };
+
+
+  const handleBackgroundTaskCreate = (selectedDate : Date) => {
+    const newTask: TaskOrEmpty = {
+      id: Math.random().toString(36).slice(-6),
+      name: "New Task",
+      start: new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      ),
+      end: new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate() + 1
+      ),
+      progress: 25,
+      type: "project",
+      hideChildren: false,
+      };
+      setTasks([...tasks, newTask]);
+  }
+
+  const BackgroundContextualPalette: React.FC<
+    BackgroundContextualPaletteProps
+  > = ({
+    selectedDate,
+    onClosePalette: onClose,
+  }) => {
+    return (
+      <div className={styles.buttonEntries}>
+        <IconButton
+          size="small"
+          aria-label="Create task"
+          title="Create task"
+          onClick={() =>
+            handleBackgroundTaskCreate(selectedDate)
+          }
+          data-testid="create-task-background"
+        >
+          <AddIcon fontSize="small" />
         </IconButton>
         <IconButton
           size="small"
@@ -491,6 +546,7 @@ export const CustomPalette_Zoom: React.FC = props => {
       roundDate={roundDate}
       ContextualPalette={ContextualPalette}
       TaskDependencyContextualPalette={DependencyContextualPalette}
+      BackgroundContextualPalette={BackgroundContextualPalette}
       onWheel={handleWheel}
       onChangeExpandState={onChangeExpandState}
       checkIsHoliday={checkIsHoliday}

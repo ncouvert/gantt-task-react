@@ -20,6 +20,7 @@ import {
   TaskOrEmpty,
   TaskToHasDependencyWarningMap,
   TaskDependencyContextualPaletteProps,
+  BackgroundContextualPaletteProps,
 } from "../../types/public-types";
 import { Arrow } from "../other/arrow";
 import { RelationLine } from "../other/relation-line";
@@ -82,6 +83,7 @@ export type TaskGanttContentProps = {
   taskHalfHeight: number;
   ContextualPalette?: React.FC<TaskContextualPaletteProps>;
   TaskDependencyContextualPalette?: React.FC<TaskDependencyContextualPaletteProps>;
+  BackgroundContextualPalette?: React.FC<BackgroundContextualPaletteProps>;
 };
 
 export const TaskGanttContent: React.FC<TaskGanttContentProps> = ({

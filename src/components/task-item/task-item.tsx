@@ -176,6 +176,7 @@ const TaskItemInner: React.FC<TaskItemProps> = props => {
   const handleClick = useCallback(
     (event: React.MouseEvent<SVGElement>) => {
       if (onContextMenu) {
+        event.stopPropagation();
         onContextMenu(task, event);
       }
     },

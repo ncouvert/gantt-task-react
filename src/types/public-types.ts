@@ -567,6 +567,7 @@ export interface StylingOption {
   dateMoveStep?: GanttDateRounding;
   ContextualPalette?: React.FC<TaskContextualPaletteProps>;
   TaskDependencyContextualPalette?: React.FC<TaskDependencyContextualPaletteProps>;
+  BackgroundContextualPalette?: React.FC<BackgroundContextualPaletteProps>;
 }
 
 export interface GanttDateRounding {
@@ -582,6 +583,11 @@ export enum GanttDateRoundingTimeUnit {
 
 export interface TaskContextualPaletteProps {
   selectedTask: Task;
+  onClosePalette: () => void;
+}
+
+export interface BackgroundContextualPaletteProps {
+  selectedDate: Date;
   onClosePalette: () => void;
 }
 

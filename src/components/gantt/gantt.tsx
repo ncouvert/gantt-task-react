@@ -171,6 +171,7 @@ export const Gantt: React.FC<GanttProps> = ({
   TooltipContent = StandardTooltipContent,
   ContextualPalette,
   TaskDependencyContextualPalette,
+  BackgroundContextualPalette,
   authorizedRelations = [
     "startToStart",
     "startToEnd",
@@ -1804,6 +1805,7 @@ export const Gantt: React.FC<GanttProps> = ({
       visibleTasksMirror,
       ContextualPalette,
       TaskDependencyContextualPalette,
+      BackgroundContextualPalette,
     }),
     [
       additionalLeftSpace,

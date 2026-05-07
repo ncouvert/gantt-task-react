@@ -1,4 +1,4 @@
-import React, { memo, SyntheticEvent, useMemo } from "react";
+import React, { memo, SyntheticEvent, useMemo, useRef } from "react";
 import type { CSSProperties, RefObject } from "react";
 
 import { GridProps, Grid } from "../grid/grid";
@@ -13,6 +13,7 @@ import {
   Distances,
   DateExtremity,
   TaskDependencyContextualPaletteProps,
+  BackgroundContextualPaletteProps,
 } from "../../types/public-types";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 
@@ -100,6 +101,8 @@ const TaskGanttInner: React.FC<TaskGanttProps> = ({
 
     setAnchorEl(null);
     setSelectedTask(null);
+    setBackgroundAnchorEl(null);
+    setselectedDate(null);
     setArrowAnchorEl(event.currentTarget);
     setSelectedDependency({ taskFrom, extremityFrom, taskTo, extremityTo });
   };
@@ -153,6 +156,8 @@ const TaskGanttInner: React.FC<TaskGanttProps> = ({
 
     setArrowAnchorEl(null);
     setSelectedDependency(null);
+    setBackgroundAnchorEl(null);
+    setselectedDate(null);
     setAnchorEl(event.currentTarget);
     setSelectedTask(task);
     barProps.onContextMenu(task, event);
@@ -187,6 +192,60 @@ const TaskGanttInner: React.FC<TaskGanttProps> = ({
       }
     }
   };
+
+  const [backgroundAnchorEl, setBackgroundAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [selectedDate, setselectedDate] = React.useState<Date>(null);
+  const isBackgroundContextualPaletteOpened = Boolean(backgroundAnchorEl);
+
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const onBackgroundContextMenu: (event: React.MouseEvent<HTMLElement>) => void = (event) => {
+      event.preventDefault();
+      let index: number = null;
+      let date: Date = gridProps.minTaskDate;
+      if (calendarRef.current) {
+        const rect = calendarRef.current.getBoundingClientRect();
+        index = (event.pageX - rect.left) / 60;
+      }
+      if (index) {
+        date = calendarProps.getDate(index);
+      }
+      setselectedDate(date);
+      setArrowAnchorEl(null);
+      setAnchorEl(null);
+      setSelectedDependency(null);
+      setSelectedTask(null);
+      setBackgroundAnchorEl(event.currentTarget);
+  };
+
+  const onCloseBackgroundContextualPalette = () => {
+    setBackgroundAnchorEl(null);
+  };
+
+  let backgroundContextualPalette:
+    | React.FunctionComponentElement<BackgroundContextualPaletteProps>
+    | undefined = undefined;
+  if (barProps.BackgroundContextualPalette && selectedDate) {
+    backgroundContextualPalette = React.createElement(barProps.BackgroundContextualPalette, {
+      selectedDate,
+      onClosePalette: onCloseBackgroundContextualPalette,
+    });
+  } else {
+    backgroundContextualPalette = <div></div>;
+  }
+
+  const onBackgroundClickAway = (e: MouseEvent | TouchEvent) => {
+    const svgElement = e.target as SVGElement;
+    if (svgElement) {
+      const keepPalette =
+        svgElement.ownerSVGElement?.classList.contains(styles.ganttTaskContent);
+      // In a better world the contextual palette should be defined in TaskItem component but ClickAwayListener and Popper uses div that are not displayed in svg
+      // So in order to let the palette open when clicking on another task, this checks if the user clicked on another task
+      if (!keepPalette) {
+        setBackgroundAnchorEl(null);
+      }
+    }
+  };
+
   return (
     <div
       className={styles.ganttTaskRoot}
@@ -194,13 +253,16 @@ const TaskGanttInner: React.FC<TaskGanttProps> = ({
       onScroll={onVerticalScrollbarScrollX}
       dir="ltr"
     >
-      <Calendar {...calendarProps} />
+      <div ref={calendarRef}>
+        <Calendar {...calendarProps} />
+      </div>
 
       <div
         ref={ganttTaskContentRef}
         className={styles.ganttTaskContent}
         style={containerStyle}
         onScroll={onScrollVertically}
+        onContextMenu={onBackgroundContextMenu}
       >
         <div style={gridStyle}>
           <svg
@@ -218,6 +280,19 @@ const TaskGanttInner: React.FC<TaskGanttProps> = ({
             />
           </svg>
         </div>
+        {barProps.BackgroundContextualPalette && isBackgroundContextualPaletteOpened && (
+          <ClickAwayListener onClickAway={onBackgroundClickAway}>
+            <Popper
+              key={`background-contextual-palette`}
+              open={isBackgroundContextualPaletteOpened}
+              anchorEl={backgroundAnchorEl}
+              disablePortal
+              placement="top"
+            >
+              <Paper>{backgroundContextualPalette}</Paper>
+            </Popper>
+          </ClickAwayListener>
+        )}
         {barProps.ContextualPalette && open && (
           <ClickAwayListener onClickAway={onClickAway}>
             <Popper
